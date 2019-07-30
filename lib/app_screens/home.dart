@@ -10,6 +10,8 @@ List cars;
 Map jsonData;
 List<String> dim = ["[w]", "[h]"], val = ["0", "0"];
 Map<String, String> map = new Map.fromIterables(dim, val);
+String flag = "En";
+var textDir=TextDirection.ltr;
 
 class Home extends StatefulWidget {
   @override
@@ -20,6 +22,8 @@ class Home extends StatefulWidget {
 
 class MainUI extends State<Home> {
 
+  var lang=["English", "عربى"];
+  var currentItem = "English";
 
   Future getCar() async {
     http.Response data = await http.get(apiUrl);
@@ -29,7 +33,9 @@ class MainUI extends State<Home> {
     setState(() {
       cars = jsonData["Cars"];
     });
+
   }
+
 
   @override
   void initState() {
@@ -47,14 +53,54 @@ class MainUI extends State<Home> {
       });
     });
   }
-
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       title: 'Cars and Machinery',
       debugShowCheckedModeBanner: false,
+
       home: Scaffold(
-          appBar: appBarDesign(),
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(100.0),
+            child: GradientAppBar(
+              title: Text("Cars and Machinery"),
+              backgroundColorStart: Colors.pink,
+              backgroundColorEnd: Colors.deepOrange,
+              centerTitle: true,
+              leading: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                  onPressed: null),
+              actions: <Widget>[
+                DropdownButton<String>(icon: Icon(Icons.language, color: Colors.white, size: 30.0,),
+
+                  underline: SizedBox(width: 0.0,),
+
+                  items: lang.map((String menuItem){
+                    return DropdownMenuItem<String>(
+                      value: menuItem,
+                      child: Text(menuItem),
+                    );
+                  }).toList(),
+
+                  onChanged: (String selectedValue){
+
+                  setState(() {
+                    this.currentItem=selectedValue;
+                    currentItem=="English"?flag="En":flag="Ar";
+                  });
+
+                  debugPrint(flag);
+
+                  },
+
+                )
+              ],
+            ),
+          ),
           body: RefreshIndicator(
               key: refreshKey,
               onRefresh: refresh,
@@ -69,23 +115,40 @@ class MainUI extends State<Home> {
   }
 }
 
-Widget appBarDesign() {
-  return PreferredSize(
-    preferredSize: Size.fromHeight(100.0),
-    child: GradientAppBar(
-      title: Text("Cars and Machinery"),
-      backgroundColorStart: Colors.pink,
-      backgroundColorEnd: Colors.deepOrange,
-      centerTitle: true,
-      leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-          onPressed: null),
-    ),
-  );
-}
+//Widget appBarDesign() {
+//  return PreferredSize(
+//    preferredSize: Size.fromHeight(100.0),
+//    child: GradientAppBar(
+//      title: Text("Cars and Machinery"),
+//      backgroundColorStart: Colors.pink,
+//      backgroundColorEnd: Colors.deepOrange,
+//      centerTitle: true,
+//      leading: IconButton(
+//          icon: Icon(
+//            Icons.arrow_back,
+//            color: Colors.white,
+//          ),
+//          onPressed: null),
+//      actions: <Widget>[
+//        DropdownButton<String>(icon: Icon(Icons.language),
+//
+//          items: lang.map((String menuItem){
+//            return DropdownMenuItem<String>(
+//              value: menuItem,
+//              child: Text(menuItem),
+//            );
+//          }).toList(),
+//
+//          onChanged: (String selectedValue){
+//
+//
+//          },
+//
+//        )
+//      ],
+//    ),
+//  );
+//}
 
 Widget topBar() {
   return Card(
@@ -170,9 +233,9 @@ Widget carsList(){
                   mainAxisAlignment: MainAxisAlignment
                       .spaceEvenly,
                   children: <Widget>[
-                     Text(cars[index]["makeEn"] +
+                     Text(cars[index]["make$flag"] +
                         " " +
-                        cars[index]["modelEn"] +
+                        cars[index]["model$flag"] +
                         " " +
                         cars[index]["year"].toString(),
                       style: TextStyle(
@@ -182,7 +245,7 @@ Widget carsList(){
                     ["currentPrice"]
                         .toString() +
                         " " +
-                        cars[index]["AuctionInfo"]["currencyEn"],
+                        cars[index]["AuctionInfo"]["currency$flag"],
                       style: TextStyle(
                         fontSize: 30.0,
                       ),),
@@ -192,7 +255,7 @@ Widget carsList(){
                       children: <Widget>[
                         Column(crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text("Lot #"),
+                            Text("Lot #",),
                              Text(cars[index]["AuctionInfo"]["lot"]
                                 .toString())
                           ],
@@ -219,7 +282,7 @@ Widget carsList(){
                         ),
 
                         Column(crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
+                           children: <Widget>[
                             Text("Time left"),
 
                           ],

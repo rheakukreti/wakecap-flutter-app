@@ -32,6 +32,7 @@ dependencies:
   cupertino_icons: ^0.1.2
 
 dev_dependencies:
+  intl_translation: ^0.17.5
   flutter_test:
     sdk: flutter
 
